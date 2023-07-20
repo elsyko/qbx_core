@@ -283,53 +283,53 @@ end)
 
 -- Out of Character Chat
 
-lib.addCommand('ooc', {
-    help = Lang:t("command.ooc.help")
-}, function(source, args)
-    local message = table.concat(args, ' ')
-    local Players = GetPlayers()
-    local Player = QBCore.Functions.GetPlayer(source)
-    local playerCoords = GetEntityCoords(GetPlayerPed(source))
-    for _, v in pairs(Players) do
-        if v == source then
-            TriggerClientEvent('chat:addMessage', v --[[@as Source]], {
-                color = { 0, 0, 255},
-                multiline = true,
-                args = {('OOC | %s'):format(GetPlayerName(source)), message}
-            })
-        elseif #(playerCoords - GetEntityCoords(GetPlayerPed(v))) < 20.0 then
-            TriggerClientEvent('chat:addMessage', v --[[@as Source]], {
-                color = { 0, 0, 255},
-                multiline = true,
-                args = {('OOC | %s'):format(GetPlayerName(source)), message}
-            })
-        elseif QBCore.Functions.HasPermission(v --[[@as Source]], 'admin') then
-            if QBCore.Functions.IsOptin(v --[[@as Source]]) then
-                TriggerClientEvent('chat:addMessage', v --[[@as Source]], {
-                    color = { 0, 0, 255},
-                    multiline = true,
-                    args = {('Proximity OOC | %s'):format(GetPlayerName(source)), message}
-                })
-                TriggerEvent('qb-log:server:CreateLog', 'ooc', 'OOC', 'white', '**' .. GetPlayerName(source) .. '** (CitizenID: ' .. Player.PlayerData.citizenid .. ' | ID: ' .. source .. ') **Message:** ' .. message, false)
-            end
-        end
-    end
-end)
+-- lib.addCommand('ooc', {
+--     help = Lang:t("command.ooc.help")
+-- }, function(source, args)
+--     local message = table.concat(args, ' ')
+--     local Players = GetPlayers()
+--     local Player = QBCore.Functions.GetPlayer(source)
+--     local playerCoords = GetEntityCoords(GetPlayerPed(source))
+--     for _, v in pairs(Players) do
+--         if v == source then
+--             TriggerClientEvent('chat:addMessage', v --[[@as Source]], {
+--                 color = { 0, 0, 255},
+--                 multiline = true,
+--                 args = {('OOC | %s'):format(GetPlayerName(source)), message}
+--             })
+--         elseif #(playerCoords - GetEntityCoords(GetPlayerPed(v))) < 20.0 then
+--             TriggerClientEvent('chat:addMessage', v --[[@as Source]], {
+--                 color = { 0, 0, 255},
+--                 multiline = true,
+--                 args = {('OOC | %s'):format(GetPlayerName(source)), message}
+--             })
+--         elseif QBCore.Functions.HasPermission(v --[[@as Source]], 'admin') then
+--             if QBCore.Functions.IsOptin(v --[[@as Source]]) then
+--                 TriggerClientEvent('chat:addMessage', v --[[@as Source]], {
+--                     color = { 0, 0, 255},
+--                     multiline = true,
+--                     args = {('Proximity OOC | %s'):format(GetPlayerName(source)), message}
+--                 })
+--                 TriggerEvent('qb-log:server:CreateLog', 'ooc', 'OOC', 'white', '**' .. GetPlayerName(source) .. '** (CitizenID: ' .. Player.PlayerData.citizenid .. ' | ID: ' .. source .. ') **Message:** ' .. message, false)
+--             end
+--         end
+--     end
+-- end)
 
 
 -- Me command
 
-lib.addCommand('me', {
-    help = Lang:t("command.me.help"),
-    params = {
-        { name = Lang:t("command.me.params.message.name"), help = Lang:t("command.me.params.message.help") }
-    }
-}, function(source, args)
-    if #args < 1 then TriggerClientEvent('QBCore:Notify', source, Lang:t('error.missing_args2'), 'error') return end
-    local msg = table.concat(args, ' '):gsub('[~<].-[>~]', '')
-    local playerState = Player(source).state
-    playerState:set('me', msg, true)
+-- lib.addCommand('me', {
+--     help = Lang:t("command.me.help"),
+--     params = {
+--         { name = Lang:t("command.me.params.message.name"), help = Lang:t("command.me.params.message.help") }
+--     }
+-- }, function(source, args)
+--     if #args < 1 then TriggerClientEvent('QBCore:Notify', source, Lang:t('error.missing_args2'), 'error') return end
+--     local msg = table.concat(args, ' '):gsub('[~<].-[>~]', '')
+--     local playerState = Player(source).state
+--     playerState:set('me', msg, true)
 
-    -- We have to reset the playerState since the state does not get replicated on StateBagHandler if the value is the same as the previous one --
-    playerState:set('me', nil, true)
-end)
+--     -- We have to reset the playerState since the state does not get replicated on StateBagHandler if the value is the same as the previous one --
+--     playerState:set('me', nil, true)
+-- end)

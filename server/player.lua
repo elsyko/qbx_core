@@ -571,7 +571,7 @@ function QBCore.Player.Save(source)
         })
     end)
     if GetResourceState('qb-inventory') ~= 'missing' then exports['qb-inventory']:SaveInventory(source) end
-    DebugPrint(('^2%s PLAYER SAVED!'):format(PlayerData.name))
+    -- DebugPrint(('^2%s PLAYER SAVED!'):format(PlayerData.name))
 end
 
 ---@param PlayerData PlayerEntity
@@ -588,7 +588,7 @@ function QBCore.Player.SaveOffline(PlayerData)
         })
     end)
     if GetResourceState('qb-inventory') ~= 'missing' then exports['qb-inventory']:SaveInventory(PlayerData, true) end
-    DebugPrint(('^2%s OFFLINE PLAYER SAVED!'):format(PlayerData.name))
+    -- DebugPrint(('^2%s OFFLINE PLAYER SAVED!'):format(PlayerData.name))
 end
 
 ---@param source Source

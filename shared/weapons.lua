@@ -93,6 +93,7 @@ QBShared.Weapons = {
 	[`weapon_militaryrifle`]		 = {name = 'weapon_militaryrifle', 		label = 'Military Rifle',   			weapontype = 'Assault Rifle',	ammotype = 'AMMO_RIFLE',	damagereason = 'Ended / Rifled / Shot down / Floored'},
     [`weapon_heavyrifle`] 			 = {name = 'weapon_heavyrifle', 	 	label = 'Heavy Rifle', 					weapontype = 'Assault Rifle',	ammotype = 'AMMO_RIFLE',	damagereason = 'Ended / Rifled / Shot down / Floored'},
     [`weapon_tacticalrifle`] 		 = {name = 'weapon_tacticalrifle', 	 	label = 'Service Rifle', 				weapontype = 'Assault Rifle',	ammotype = 'AMMO_RIFLE',	damagereason = 'Ended / Rifled / Shot down / Floored'},
+	[`weapon_scar17fm`] 		     = {name = 'weapon_scar17fm', 	 		label = 'FN SCAR 17', 					weapontype = 'Assault Rifle',	ammotype = 'AMMO_RIFLE',	damagereason = 'Ended / Rifled / Shot down / Floored'},
 
     -- Light Machine Guns
 	[`weapon_mg`] 					 = {name = 'weapon_mg', 			label = 'Machinegun', 			weapontype = 'Light Machine Gun',	ammotype = 'AMMO_MG',	damagereason = 'Machine gunned / Sprayed / Ruined'},
