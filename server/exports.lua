@@ -139,7 +139,7 @@ exports('UpdateJob', UpdateJob)
 -- Single add item
 ---@deprecated incompatible with ox_inventory. Update ox_inventory item config instead.
 local function AddItem(itemName, item)
-    print(string.format("%s invoked deprecated function AddItem. This is incompatible with ox_inventory", GetInvokingResource()))
+    -- print(string.format("%s invoked deprecated function AddItem. This is incompatible with ox_inventory", GetInvokingResource()))
     if type(itemName) ~= "string" then
         return false, "invalid_item_name"
     end
@@ -161,7 +161,7 @@ exports('AddItem', AddItem)
 -- Single update item
 ---@deprecated incompatible with ox_inventory. Update ox_inventory item config instead.
 local function UpdateItem(itemName, item)
-    print(string.format("%s invoked deprecated function UpdateItem. This is incompatible with ox_inventory", GetInvokingResource()))
+    -- print(string.format("%s invoked deprecated function UpdateItem. This is incompatible with ox_inventory", GetInvokingResource()))
     if type(itemName) ~= "string" then
         return false, "invalid_item_name"
     end
@@ -180,7 +180,7 @@ exports('UpdateItem', UpdateItem)
 -- Multiple Add Items
 ---@deprecated incompatible with ox_inventory. Update ox_inventory item config instead.
 local function AddItems(items)
-    print(string.format("%s invoked deprecated function AddItems. This is incompatible with ox_inventory", GetInvokingResource()))
+    -- print(string.format("%s invoked deprecated function AddItems. This is incompatible with ox_inventory", GetInvokingResource()))
     local shouldContinue = true
     local message = "success"
     local errorItem = nil
@@ -215,7 +215,7 @@ exports('AddItems', AddItems)
 -- Single Remove Item
 ---@deprecated incompatible with ox_inventory. Update ox_inventory item config instead.
 local function RemoveItem(itemName)
-    print(string.format("%s invoked deprecated function RemoveItem. This is incompatible with ox_inventory", GetInvokingResource()))
+    -- print(string.format("%s invoked deprecated function RemoveItem. This is incompatible with ox_inventory", GetInvokingResource()))
     if type(itemName) ~= "string" then
         return false, "invalid_item_name"
     end

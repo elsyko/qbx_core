@@ -2,7 +2,7 @@
 QBCore.Commands = {}
 
 function QBCore.Commands.Add(name, help, arguments, argsrequired, callback, permission)
-    print(string.format("/!\\ Not an Error /!\\ | %s invoked deprecated Commands function. Please use Ox_lib's addCommand instead.", GetInvokingResource()))
+    -- print(string.format("/!\\ Not an Error /!\\ | %s invoked deprecated Commands function. Please use Ox_lib's addCommand instead.", GetInvokingResource()))
     local properties = {
         help = help,
         restricted = permission and permission ~= "user" and 'group.'..permission or false,
@@ -71,7 +71,7 @@ lib.addCommand('tp', {
 end)
 
 
-lib.addCommand('tpm', {
+lib.addCommand({'tpm', 'gwp'}, {
     help = Lang:t("command.tpm.help"),
     restricted = "group.admin"
 }, function(source)
@@ -175,7 +175,7 @@ lib.addCommand('car', {
     },
     restricted = "group.admin"
 }, function(source, args)
-    if not args then return end
+    if not args then args = "sultan" end
     QBCore.Functions.CreateVehicle(source, args[Lang:t("command.car.params.model.name")], nil, true)
 end)
 

@@ -196,7 +196,7 @@ end)
 -- Client Callback
 ---@deprecated call a function instead
 RegisterNetEvent('QBCore:Client:TriggerClientCallback', function(name, ...)
-    print(string.format("%s invoked deprecated event QBCore:Client:TriggerClientCallback. Call a function instead", GetInvokingResource()))
+    -- print(string.format("%s invoked deprecated event QBCore:Client:TriggerClientCallback. Call a function instead", GetInvokingResource()))
     QBCore.Functions.TriggerClientCallback(name, function(...)
         TriggerServerEvent('QBCore:Server:TriggerClientCallback', name, ...)
     end, ...)
@@ -205,7 +205,7 @@ end)
 -- Server Callback
 ---@deprecated use https://overextended.github.io/docs/ox_lib/Callback/Lua/Client/ instead
 RegisterNetEvent('QBCore:Client:TriggerCallback', function(name, ...)
-    print(string.format("%s invoked deprecated event QBCore:Client:TriggerCallback. Use ox_lib callback functions instead.", GetInvokingResource()))
+    -- print(string.format("%s invoked deprecated event QBCore:Client:TriggerCallback. Use ox_lib callback functions instead.", GetInvokingResource()))
     if QBCore.ServerCallbacks[name] then
         QBCore.ServerCallbacks[name](...)
         QBCore.ServerCallbacks[name] = nil
