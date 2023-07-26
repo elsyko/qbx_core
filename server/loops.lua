@@ -31,15 +31,27 @@ lib.cron.new(('*/%s * * * *'):format(QBCore.Config.Money.PaycheckTimeout), funct
                         else
                             Player.Functions.AddMoney('bank', payment)
                             exports['qbx-management']:RemoveMoney(Player.PlayerData.job.name, payment)
-                            TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t('info.received_paycheck', {value = payment}))
+                            TriggerClientEvent("phone:sendNotification", Player.PlayerData.source, {
+                                app = "Wallet",
+                                title = "Paycheck Received",
+                                content = "$"..payment.." has been deposited into your account!",
+                            })
                         end
                     else
                         Player.Functions.AddMoney('bank', payment)
-                        TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t('info.received_paycheck', {value = payment}))
+                        TriggerClientEvent("phone:sendNotification", Player.PlayerData.source, {
+                            app = "Wallet",
+                            title = "Paycheck Received",
+                            content = "$"..payment.." has been deposited into your account!",
+                        })
                     end
                 else
                     Player.Functions.AddMoney('bank', payment)
-                    TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t('info.received_paycheck', {value = payment}))
+                    TriggerClientEvent("phone:sendNotification", Player.PlayerData.source, {
+                        app = "Wallet",
+                        title = "Paycheck Received",
+                        content = "$"..payment.." has been deposited into your account!",
+                    })
                 end
             end
         end
