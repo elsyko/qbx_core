@@ -21,6 +21,26 @@ QBShared.Jobs = {
             },
         },
 	},
+    ['tattoobusiness'] = { -- the businessName from config_business.lua
+        label = 'Tattoo business',
+        defaultDuty = true,
+        offDutyPay = false,
+        grades = { -- names must be same as in config_business.lua
+            ['0'] = {
+                name = 'novice',
+                payment = 50
+            },
+            ['1'] = {
+                name = 'artist',
+                payment = 50
+            },
+            ['2'] = {
+                name = 'boss',
+                payment = 50,
+                isboss = true -- see notes below
+            },
+        },
+    },
 	['police'] = {
 		label = 'LSPD',
         type = 'leo',
