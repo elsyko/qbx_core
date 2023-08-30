@@ -180,7 +180,6 @@ function DeletePlayerEntity(citizenId)
         'phone_invoices',
         'phone_messages',
         'playerskins',
-        'player_contacts',
         'player_houses',
         'player_mails',
         'player_outfits',
