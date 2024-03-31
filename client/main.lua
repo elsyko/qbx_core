@@ -3,20 +3,6 @@ QBX.PlayerData = {}
 QBX.Shared = require 'shared.main'
 QBX.IsLoggedIn = false
 
----@return table<string, Job>
-function GetJobs()
-    return QBX.Shared.Jobs
-end
-
-exports('GetJobs', GetJobs)
-
----@return table<string, Gang>
-function GetGangs()
-    return QBX.Shared.Gangs
-end
-
-exports('GetGangs', GetGangs)
-
 ---@return table<string, Vehicle>
 function GetVehiclesByName()
     return QBX.Shared.Vehicles
@@ -33,7 +19,7 @@ exports('GetVehiclesByHash', GetVehiclesByHash)
 
 ---@return table<string, Vehicle[]>
 function GetVehiclesByCategory()
-	return MapTableBySubfield('category', QBX.Shared.Vehicles)
+    return qbx.table.mapBySubfield(QBX.Shared.Vehicles, 'category')
 end
 
 exports('GetVehiclesByCategory', GetVehiclesByCategory)
@@ -58,4 +44,21 @@ end)
 
 lib.callback.register('qbx_core:client:setHealth', function(health)
     SetEntityHealth(cache.ped, health)
+end)
+
+local mapText = require 'config.client'.pauseMapText
+if mapText == '' or type(mapText) ~= 'string' then mapText = 'FiveM' end
+AddTextEntry('FE_THDR_GTAO', mapText)
+
+CreateThread(function()
+    for _, v in pairs(GetVehiclesByName()) do
+        if v.model and v.name then
+            local gameName = GetDisplayNameFromVehicleModel(v.model)
+            if gameName and gameName ~= 'CARNOTFOUND' then
+                AddTextEntryByHash(joaat(gameName), v.name)
+            else
+                lib.print.warn('Could not find gameName value in vehicles.meta for vehicle model %s', v.model)
+            end
+        end
+	end
 end)

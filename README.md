@@ -1,4 +1,4 @@
-![image](https://github.com/alberttheprince/qbx-core/assets/85725579/f2c1a8ee-c315-46a1-8c9e-07530a896ba8)
+![image](https://github.com/Qbox-project/qbx_core/assets/22198949/7fa569a0-0ad8-4e88-ae14-fe4eeae2de04)
 
 
 _<p align="center">"And then there was Qbox"</p>_
@@ -12,13 +12,20 @@ Want to know more? View our [documentation](https://qbox-project.github.io/)
 
 # Features
 
-- **Backwards compatibility with QB Resources**
+- **Bridge layer provides Backwards compatibility with Most QB Resources with 0 effort required**
 - Built-in multicharacter
+- Built-in multi-job/gang
+- Built-in queue system for full servers
 - Persistent player vehicles
-- Export-based
-- Rewritten code base
+- Export based API to read/write core data
 
-# Depedencies
+## Modules
+The core makes available several optional modules for developers to import into their resources:
+- Hooks: For developers to provide Ox style hooks to extend the functionality of their resources
+- Logger: Can log to either discord, or Ox's logger through one interface
+- Lib: Common functions for tables, strings, math, native audio, vehicles, and drawing text.
+
+# Dependencies
 
 - [oxmysql](https://github.com/overextended/oxmysql)
 - [ox_lib](https://github.com/overextended/ox_lib)

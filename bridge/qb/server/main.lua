@@ -7,6 +7,8 @@ local qbCoreCompat = {}
 
 qbCoreCompat.Config = lib.table.merge(require 'config.server', require 'config.shared')
 qbCoreCompat.Shared = require 'bridge.qb.shared.main'
+qbCoreCompat.Shared.Jobs = GetJobs()
+qbCoreCompat.Shared.Gangs = GetGangs()
 qbCoreCompat.Players = QBX.Players
 qbCoreCompat.Player = require 'bridge.qb.server.player'
 qbCoreCompat.Player_Buckets = QBX.Player_Buckets
@@ -53,13 +55,12 @@ end)
 --- @deprecated
 RegisterNetEvent('QBCore:CallCommand', function(command, args)
     local src = source --[[@as Source]]
-    if not qbCoreCompat.Commands.List[command] then return end
     local player = GetPlayer(src)
     if not player then return end
-    if IsPlayerAceAllowed(src, string.format('command.%s', command)) then
+    if IsPlayerAceAllowed(src --[[@as string]], ('command.%s'):format(command)) then
         local commandString = command
         for _, value in pairs(args) do
-            commandString = string.format('%s %s', commandString, value)
+            commandString = ('%s %s'):format(commandString, value)
         end
         TriggerClientEvent('QBCore:Command:CallCommand', src, commandString)
     end
@@ -86,16 +87,26 @@ function qbCoreCompat.Functions.TriggerCallback(name, source, cb, ...)
     qbCoreCompat.ServerCallbacks[name](source, cb, ...)
 end
 
----@deprecated call server function SpawnVehicle instead from imports/utils.lua.
+---@deprecated call server function qbx.spawnVehicle from modules/lib.lua
 qbCoreCompat.Functions.CreateCallback('QBCore:Server:SpawnVehicle', function(source, cb, model, coords, warp)
-    local netId = SpawnVehicle(source, model, coords, warp)
-    if netId then cb(netId) end
+    local vehId = qbCoreCompat.Functions.SpawnVehicle(source, model, coords, warp)
+
+    if vehId then cb(NetworkGetNetworkIdFromEntity(vehId)) end
 end)
 
----@deprecated call server function SpawnVehicle instead from imports/utils.lua.
+---@deprecated call server function qbx.spawnVehicle from modules/lib.lua
 qbCoreCompat.Functions.CreateCallback('QBCore:Server:CreateVehicle', function(source, cb, model, coords, warp)
-    local netId = SpawnVehicle(source, model, coords, warp)
-    if netId then cb(netId) end
+    local vehId = qbCoreCompat.Functions.CreateVehicle(source, model, nil, coords, warp)
+
+    if vehId then cb(NetworkGetNetworkIdFromEntity(vehId)) end
+end)
+
+AddEventHandler('qbx_core:server:onJobUpdate', function(jobName, job)
+    qbCoreCompat.Shared.Jobs[jobName] = job
+end)
+
+AddEventHandler('qbx_core:server:onGangUpdate', function(gangName, gang)
+    qbCoreCompat.Shared.Gangs[gangName] = gang
 end)
 
 local createQbExport = require 'bridge.qb.shared.export-function'

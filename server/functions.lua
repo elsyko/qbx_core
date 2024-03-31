@@ -2,6 +2,7 @@ local serverConfig = require 'config.server'.server
 local positionConfig = require 'config.shared'.notifyPosition
 local logger = require 'modules.logger'
 local loggingConfig = require 'config.server'.logging
+local storage = require 'server.storage.main'
 
 -- Getters
 -- Get your player first and then trigger a function on them
@@ -129,6 +130,7 @@ exports('GetBucketObjects', GetBucketObjects)
 function SetPlayerBucket(source, bucket)
     if not (source or bucket) then return false end
 
+    Player(source).state:set('instance', bucket, true)
     SetPlayerRoutingBucket(source --[[@as string]], bucket)
     QBX.Player_Buckets[source] = bucket
     return true
@@ -212,7 +214,7 @@ exports('CanUseItem', CanUseItem)
 ---@return boolean
 function IsWhitelisted(source)
     if not serverConfig.whitelist then return true end
-    if HasPermission(source, serverConfig.whitelistPermission) then return true end
+    if IsPlayerAceAllowed(source --[[@as string]], serverConfig.whitelistPermission) then return true end
     return false
 end
 
@@ -221,6 +223,7 @@ exports('IsWhitelisted', IsWhitelisted)
 -- Setting & Removing Permissions
 -- TODO: Should these be moved to the utility module?
 
+---@deprecated use cfg ACEs instead
 ---@param source Source
 ---@param permission string
 function AddPermission(source, permission)
@@ -232,8 +235,10 @@ function AddPermission(source, permission)
     end
 end
 
+---@deprecated use cfg ACEs instead
 exports('AddPermission', AddPermission)
 
+---@deprecated use cfg ACEs instead
 ---@param source Source
 ---@param permission string
 function RemovePermission(source, permission)
@@ -260,16 +265,18 @@ function RemovePermission(source, permission)
     end
 end
 
+---@deprecated use cfg ACEs instead
 exports('RemovePermission', RemovePermission)
 
 -- Checking for Permission Level
+---@deprecated use IsPlayerAceAllowed
 ---@param source Source
 ---@param permission string|string[]
 ---@return boolean
 function HasPermission(source, permission)
-    if type(permission) == "string" then
+    if type(permission) == 'string' then
         if IsPlayerAceAllowed(source --[[@as string]], permission) then return true end
-    elseif type(permission) == "table" then
+    elseif type(permission) == 'table' then
         for _, permLevel in pairs(permission) do
             if IsPlayerAceAllowed(source --[[@as string]], permLevel) then return true end
         end
@@ -278,8 +285,10 @@ function HasPermission(source, permission)
     return false
 end
 
+---@deprecated use IsPlayerAceAllowed
 exports('HasPermission', HasPermission)
 
+---@deprecated use cfg ACEs instead
 ---@param source Source
 ---@return table<string, boolean>
 function GetPermission(source)
@@ -292,6 +301,7 @@ function GetPermission(source)
     return perms
 end
 
+---@deprecated use cfg ACEs instead
 exports('GetPermission', GetPermission)
 
 -- Opt in or out of admin reports
@@ -299,7 +309,7 @@ exports('GetPermission', GetPermission)
 ---@return boolean
 function IsOptin(source)
     local license = GetPlayerIdentifierByType(source --[[@as string]], 'license2') or GetPlayerIdentifierByType(source --[[@as string]], 'license')
-    if not license or not HasPermission(source, 'admin') then return false end
+    if not license or not IsPlayerAceAllowed(source --[[@as string]], 'admin') then return false end
     local player = GetPlayer(source)
     return player.PlayerData.optin
 end
@@ -310,7 +320,7 @@ exports('IsOptin', IsOptin)
 ---@param source Source
 function ToggleOptin(source)
     local license = GetPlayerIdentifierByType(source --[[@as string]], 'license2') or GetPlayerIdentifierByType(source --[[@as string]], 'license')
-    if not license or not HasPermission(source, 'admin') then return end
+    if not license or not IsPlayerAceAllowed(source --[[@as string]], 'admin') then return end
     local player = GetPlayer(source)
     player.PlayerData.optin = not player.PlayerData.optin
     player.Functions.SetPlayerData('optin', player.PlayerData.optin)
@@ -324,16 +334,16 @@ exports('ToggleOptin', ToggleOptin)
 ---@return string? playerMessage
 function IsPlayerBanned(source)
     local plicense = GetPlayerIdentifierByType(source --[[@as string]], 'license2') or GetPlayerIdentifierByType(source --[[@as string]], 'license')
-    local result = FetchBanEntity({
+    local result = storage.fetchBan({
         license = plicense
     })
     if not result then return false end
     if os.time() < result.expire then
         local timeTable = os.date('*t', tonumber(result.expire))
-        return true, 'You have been banned from the server:\n' .. result.reason .. '\nYour ban expires ' .. timeTable.day .. '/' .. timeTable.month .. '/' .. timeTable.year .. ' ' .. timeTable.hour .. ':' .. timeTable.min .. '\n'
+        return true, ('You have been banned from the server:\n%s\nYour ban expires in %s/%s/%s %s:%s\n'):format(result.reason, timeTable.day, timeTable.month, timeTable.year, timeTable.hour, timeTable.min)
     else
         CreateThread(function()
-            DeleteBanEntity({
+            storage.deleteBan({
                 license = plicense
             })
         end)
@@ -346,7 +356,7 @@ exports('IsPlayerBanned', IsPlayerBanned)
 ---@see client/lua:Notify
 function Notify(source, text, notifyType, duration, subTitle, notifyPosition, notifyStyle, notifyIcon, notifyIconColor)
     local title, description
-    if type(text) == "table" then
+    if type(text) == 'table' then
         title = text.text or 'Placeholder'
         description = text.caption or nil
     elseif subTitle then
@@ -378,7 +388,7 @@ local function GetCoreVersion(InvokingResource)
     ---@diagnostic disable-next-line: missing-parameter
     local resourceVersion = GetResourceMetadata(GetCurrentResourceName(), 'version')
     if InvokingResource and InvokingResource ~= '' then
-        lib.print.debug(("%s called qbcore version check: %s"):format(InvokingResource or 'Unknown Resource', resourceVersion))
+        lib.print.debug(('%s called qbcore version check: %s'):format(InvokingResource or 'Unknown Resource', resourceVersion))
     end
     return resourceVersion
 end
@@ -390,7 +400,7 @@ exports('GetCoreVersion', GetCoreVersion)
 local function ExploitBan(playerId, origin)
     local name = GetPlayerName(playerId)
     CreateThread(function()
-        InsertBanEntity({
+        storage.insertBan({
             name = name,
             license = GetPlayerIdentifierByType(playerId --[[@as string]], 'license2') or GetPlayerIdentifierByType(playerId --[[@as string]], 'license'),
             discordId = GetPlayerIdentifierByType(playerId --[[@as string]], 'discord'),
@@ -400,14 +410,14 @@ local function ExploitBan(playerId, origin)
             bannedBy = 'Anti Cheat'
         })
     end)
-    DropPlayer(playerId --[[@as string]], Lang:t('info.exploit_banned', {discord = serverConfig.discord}))
+    DropPlayer(playerId --[[@as string]], locale('info.exploit_banned', serverConfig.discord))
     logger.log({
         source = 'qbx_core',
         webhook = loggingConfig.webhook['anticheat'],
         event = 'Anti-Cheat',
         color = 'red',
         tags = loggingConfig.role,
-        message = name .. " has been banned for exploiting " .. origin
+        message = ('%s has been banned for exploiting %s'):format(name, origin)
     })
 end
 

@@ -8,9 +8,9 @@ end)
 
 -- RegisterNetEvent('QBCore:Client:VehicleInfo', function(info)
 --     local timeout = 0
---     while not NetworkDoesEntityExistWithNetworkId(info.netId) and timeout < 1000 do 
+--     while not NetworkDoesEntityExistWithNetworkId(info.netId) and timeout < 1000 do
 --         timeout = timeout + 1
---         Wait(1) 
+--         Wait(1)
 --     end
 --     local vehicle = NetworkGetEntityFromNetworkId(info.netId)
 --     if not DoesEntityExist(vehicle) then return end

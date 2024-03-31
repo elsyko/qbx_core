@@ -53,7 +53,7 @@ local function logPayload(payload)
     local tags
     local username = 'QBX Logs'
     local avatarUrl = 'https://qbox-project.github.io/qbox-duck.png'
-    
+
     if payload.tags then
         for i = 1, #payload.tags do
             if not tags then tags = '' end
@@ -67,8 +67,8 @@ local function logPayload(payload)
             return
         end
 
-        local remainingRequests = tonumber(headers["X-RateLimit-Remaining"])
-        local resetTime = tonumber(headers["X-RateLimit-Reset"])
+        local remainingRequests = tonumber(headers['X-RateLimit-Remaining'])
+        local resetTime = tonumber(headers['X-RateLimit-Reset'])
 
         if remainingRequests and resetTime and remainingRequests == 0 then
             local currentTime = os.time()

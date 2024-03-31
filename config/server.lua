@@ -25,7 +25,7 @@ return {
         identifierTypes = {
             citizenid = {
                 valueFunction = function()
-                    return tostring(RandomLetter(3) .. RandomNumber(5)):upper()
+                    return lib.string.random('........')
                 end,
             },
             AccountNumber = {
@@ -40,7 +40,7 @@ return {
             },
             FingerId = {
                 valueFunction = function()
-                    return tostring(RandomLetter(2) .. RandomNumber(3) .. RandomLetter(1) .. RandomNumber(2) .. RandomLetter(3) .. RandomNumber(4))
+                    return lib.string.random('...............')
                 end,
             },
             WalletId = {
@@ -63,6 +63,16 @@ return {
     characterDataTables = {
         players = 'citizenid',
         apartments = 'citizenid',
+        bank_accounts_new = 'id',
+        crypto_transactions = 'citizenid',
+        phone_invoices = 'citizenid',
+        phone_messages = 'citizenid',
+        playerskins = 'citizenid',
+        player_contacts = 'citizenid',
+        player_houses = 'citizenid',
+        player_mails = 'citizenid',
+        player_outfits = 'citizenid',
+        player_vehicles = 'citizenid',
     }, -- Rows to be deleted when the character is deleted
 
 
@@ -74,6 +84,7 @@ return {
         whitelistPermission = 'admin', -- Permission that's able to enter the server when the whitelist is on
         discord = 'https://discord.gg/inverseroleplay', -- Discord invite link
         checkDuplicateLicense = false, -- Check for duplicate rockstar license on join
+        ---@deprecated use cfg ACE system instead
         permissions = { 'god', 'admin', 'mod' }, -- Add as many groups as you want here after creating them in your server.cfg
     },
 
@@ -121,10 +132,10 @@ return {
     end,
 
     getSocietyAccount = function(accountName)
-        return exports.qbx_management:GetAccount(accountName)
+        return exports['Renewed-Banking']:getAccountMoney(accountName)
     end,
 
     removeSocietyMoney = function(accountName, payment)
-        return exports.qbx_management:RemoveMoney(accountName, payment)
-    end
+        return exports['Renewed-Banking']:removeAccountMoney(accountName, payment)
+    end,
 }

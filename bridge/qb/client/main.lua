@@ -7,6 +7,8 @@ local qbCoreCompat = {}
 qbCoreCompat.PlayerData = QBX.PlayerData
 qbCoreCompat.Config = lib.table.merge(require 'config.client', require 'config.shared')
 qbCoreCompat.Shared = require 'bridge.qb.shared.main'
+qbCoreCompat.Shared.Jobs = GetJobs()
+qbCoreCompat.Shared.Gangs = GetGangs()
 qbCoreCompat.Functions = require 'bridge.qb.client.functions'
 
 ---@deprecated use https://overextended.github.io/docs/ox_lib/Callback/Lua/Client/ instead
@@ -65,4 +67,12 @@ local createQbExport = require 'bridge.qb.shared.export-function'
 
 createQbExport('GetCoreObject', function()
     return qbCoreCompat
+end)
+
+RegisterNetEvent('qbx_core:client:onJobUpdate', function(jobName, job)
+    qbCoreCompat.Shared.Jobs[jobName] = job
+end)
+
+RegisterNetEvent('qbx_core:client:onGangUpdate', function(gangName, gang)
+    qbCoreCompat.Shared.Gangs[gangName] = gang
 end)
