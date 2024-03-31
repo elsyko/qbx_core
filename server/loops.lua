@@ -47,7 +47,7 @@ local function pay(player)
                 if account ~= 0 then -- Checks if player is employed by a society
                     if account < payment then -- Checks if company has enough money to pay society
                         print(string.format("NOT PAYING %s %s their paycheck of %s from %s because society is too poor", player.PlayerData.charinfo.firstname, player.PlayerData.charinfo.lastname, payment, job.name))
-                        TriggerClientEvent('QBCore:Notify', player.PlayerData.source, Lang:t('error.company_too_poor'), 'error')
+                        TriggerClientEvent('QBCore:Notify', player.PlayerData.source, locale('error.company_too_poor'), 'error')
                     else
                         print(string.format("Paying %s %s their paycheck of %s from %s society account", player.PlayerData.charinfo.firstname, player.PlayerData.charinfo.lastname, payment, job.name))
                         player.Functions.AddMoney('bank', payment, "Paycheck")

@@ -137,11 +137,11 @@ end)
 lib.addCommand('car', {
     help = locale('command.car.help'),
     params = {
-        { name = Lang:t("command.car.params.model.name"), help = Lang:t("command.car.params.model.help"), optional = true }
+        { name = locale("command.car.params.model.name"), help = locale("command.car.params.model.help"), optional = true }
     },
     restricted = 'group.admin'
 }, function(source, args)
-    if not args[Lang:t("command.car.params.model.name")] then args[Lang:t("command.car.params.model.name")] = 'sultan' end
+    if not args[locale("command.car.params.model.name")] then args[locale("command.car.params.model.name")] = 'sultan' end
 
     local ped = GetPlayerPed(source)
     local keepCurrentVehicle = args[locale('command.car.params.keepCurrentVehicle.name')]
