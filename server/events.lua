@@ -1,3 +1,7 @@
+local serverConfig = require 'config.server'.server
+local loggingConfig = require 'config.server'.logging
+local logger = require 'modules.logger'
+
 -- Event Handler
 
 local usedLicenses = {}
@@ -11,7 +15,7 @@ AddEventHandler('chatMessage', function(_, _, message)
 end)
 
 AddEventHandler('playerJoining', function()
-    if not QBConfig.Server.CheckDuplicateLicense then return end
+    if not serverConfig.checkDuplicateLicense then return end
     local src = source --[[@as string]]
     local license = GetPlayerIdentifierByType(src, 'license2') or GetPlayerIdentifierByType(src, 'license')
     if not license then return end
@@ -28,13 +32,19 @@ AddEventHandler('playerDropped', function(reason)
     local src = source --[[@as string]]
     local license = GetPlayerIdentifierByType(src, 'license2') or GetPlayerIdentifierByType(src, 'license')
     if license then usedLicenses[license] = nil end
-    if not QBCore.Players[src] then return end
+    if not QBX.Players[src] then return end
     GlobalState.PlayerCount -= 1
-    local Player = QBCore.Players[src]
-    TriggerEvent('qb-log:server:CreateLog', 'joinleave', 'Dropped', 'red', '**' .. GetPlayerName(src) .. '** (' .. Player.PlayerData.license .. ') left..' ..'\n **Reason:** ' .. reason)
-    Player.Functions.Save()
-    QBCore.Player_Buckets[Player.PlayerData.license] = nil
-    QBCore.Players[src] = nil
+    local player = QBX.Players[src]
+    logger.log({
+        source = 'qbx_core',
+        webhook = loggingConfig.webhook['joinleave'],
+        event = 'Dropped',
+        color = 'red',
+        message = '**' .. GetPlayerName(src) .. '** (' .. player.PlayerData.license .. ') left..' ..'\n **Reason:** ' .. reason,
+    })
+    player.Functions.Save()
+    QBX.Player_Buckets[player.PlayerData.license] = nil
+    QBX.Players[src] = nil
 end)
 
 ---@class Deferrals https://docs.fivem.net/docs/scripting-reference/events/list/playerConnecting/#deferring-connections
@@ -49,29 +59,21 @@ end)
 ---@param deferrals Deferrals
 local function onPlayerConnecting(name, _, deferrals)
     local src = source --[[@as string]]
-    local license
-    local identifiers = GetPlayerIdentifiers(src)
+    local license = GetPlayerIdentifierByType(src, 'license2') or GetPlayerIdentifierByType(src, 'license')
     deferrals.defer()
 
     -- Mandatory wait
     Wait(0)
 
-    if QBCore.Config.Server.Closed then
+    if serverConfig.closed then
         if not IsPlayerAceAllowed(src, 'qbadmin.join') then
-            deferrals.done(QBCore.Config.Server.ClosedReason)
-        end
-    end
-
-    for _, v in pairs(identifiers) do
-        if string.find(v, 'license2') or string.find(v, 'license') then
-            license = v
-            break
+            deferrals.done(serverConfig.closedReason)
         end
     end
 
     if not license then
         deferrals.done(Lang:t('error.no_valid_license'))
-    elseif QBCore.Config.Server.CheckDuplicateLicense and IsLicenseInUse(license) then
+    elseif serverConfig.checkDuplicateLicense and IsLicenseInUse(license) then
         deferrals.done(Lang:t('error.duplicate_license'))
     end
 
@@ -81,24 +83,24 @@ local function onPlayerConnecting(name, _, deferrals)
     -- conduct database-dependant checks
     CreateThread(function()
         deferrals.update(string.format(Lang:t('info.checking_ban'), name))
-        local databaseSuccess, databaseError = pcall(function()
-            local isBanned, Reason = QBCore.Functions.IsPlayerBanned(src --[[@as Source]])
+        local success, err = pcall(function()
+            local isBanned, Reason = IsPlayerBanned(src --[[@as Source]])
             if isBanned then
                 deferrals.done(Reason)
             end
         end)
 
-        if QBCore.Config.Server.Whitelist then
+        if serverConfig.whitelist and success then
             deferrals.update(string.format(Lang:t('info.checking_whitelisted'), name))
-            databaseSuccess, databaseError = pcall(function()
-                if not QBCore.Functions.IsWhitelisted(src --[[@as Source]]) then
+            success, err = pcall(function()
+                if not IsWhitelisted(src --[[@as Source]]) then
                     deferrals.done(Lang:t('error.not_whitelisted'))
                 end
             end)
         end
 
-        if not databaseSuccess then
-            databasePromise:reject(databaseError)
+        if not success then
+            databasePromise:reject(err)
         end
         databasePromise:resolve()
     end)
@@ -107,9 +109,9 @@ local function onPlayerConnecting(name, _, deferrals)
     databasePromise:next(function()
         deferrals.update(string.format(Lang:t('info.join_server'), name))
         deferrals.done()
-    end, function (databaseError)
-        deferrals.done(Lang:t('error.connecting_database_error'))
-        print('^1' .. databaseError)
+    end, function(err)
+        deferrals.done(Lang:t('error.connecting_error'))
+        lib.print.error(err)
     end)
 
     -- if conducting db checks for too long then raise error
@@ -144,12 +146,12 @@ end)
 ---@param reason string
 RegisterNetEvent('QBCore:Server:CloseServer', function(reason)
     local src = source --[[@as Source]]
-    if QBCore.Functions.HasPermission(src, 'admin') then
+    if HasPermission(src, 'admin') then
         reason = reason or 'No reason specified'
-        QBCore.Config.Server.Closed = true
-        QBCore.Config.Server.ClosedReason = reason
-        for k in pairs(QBCore.Players) do
-            if not QBCore.Functions.HasPermission(k, QBCore.Config.Server.WhitelistPermission) then
+        serverConfig.closed = true
+        serverConfig.closedReason = reason
+        for k in pairs(QBX.Players) do
+            if not HasPermission(k, serverConfig.whitelistPermission) then
                 KickWithReason(k, reason, nil, nil)
             end
         end
@@ -160,77 +162,25 @@ end)
 
 RegisterNetEvent('QBCore:Server:OpenServer', function()
     local src = source --[[@as Source]]
-    if QBCore.Functions.HasPermission(src, 'admin') then
-        QBCore.Config.Server.Closed = false
+    if HasPermission(src, 'admin') then
+        serverConfig.closed = false
     else
         KickWithReason(src, Lang:t("error.no_permission"), nil, nil)
     end
-end)
-
--- Callback Events --
-
--- Client Callback
----@deprecated use https://overextended.github.io/docs/ox_lib/Callback/Lua/Server instead
-RegisterNetEvent('QBCore:Server:TriggerClientCallback', function(name, ...)
-    -- print(string.format("%s invoked deprecated event QBCore:Server:TriggerClientCallback. Use ox_lib callback functions instead.", GetInvokingResource()))
-    if QBCore.ClientCallbacks[name] then
-        QBCore.ClientCallbacks[name](...)
-        QBCore.ClientCallbacks[name] = nil
-    end
-end)
-
--- Server Callback
----@deprecated use https://overextended.github.io/docs/ox_lib/Callback/Lua/Server instead
-RegisterNetEvent('QBCore:Server:TriggerCallback', function(name, ...)
-    -- print(string.format("%s invoked deprecated event QBCore:Server:TriggerCallback. Use ox_lib callback functions instead.", GetInvokingResource()))
-    local src = source
-    QBCore.Functions.TriggerCallback(name, src, function(...)
-        TriggerClientEvent('QBCore:Client:TriggerCallback', src, name, ...)
-    end, ...)
 end)
 
 -- Player
 
 RegisterNetEvent('QBCore:ToggleDuty', function()
     local src = source --[[@as Source]]
-    local Player = QBCore.Functions.GetPlayer(src)
-    if not Player then return end
-    if Player.PlayerData.job.onduty then
-        Player.Functions.SetJobDuty(false)
-        TriggerClientEvent('QBCore:Notify', src, Lang:t('info.off_duty'))
+    local player = GetPlayer(src)
+    if not player then return end
+    if player.PlayerData.job.onduty then
+        player.Functions.SetJobDuty(false)
+        Notify(src, Lang:t('info.off_duty'))
     else
-        Player.Functions.SetJobDuty(true)
-        TriggerClientEvent('QBCore:Notify', src, Lang:t('info.on_duty'))
+        player.Functions.SetJobDuty(true)
+        Notify(src, Lang:t('info.on_duty'))
     end
-    TriggerClientEvent('QBCore:Client:SetDuty', src, Player.PlayerData.job.onduty)
-end)
-
---- @deprecated
-RegisterNetEvent('QBCore:CallCommand', function(command, args)
-    -- print(string.format("/!\\ Not an Error /!\\ | %s invoked deprecated CallCommand function. Please use the native ExecuteCommand instead (it takes in command and args as a single string).", GetInvokingResource()))
-    local src = source --[[@as Source]]
-    if not QBCore.Commands.List[command] then return end
-    local Player = QBCore.Functions.GetPlayer(src)
-    if not Player then return end
-    if IsPlayerAceAllowed(src, string.format('command.%s', command)) then
-        local commandString = command
-        for _, value in pairs(args) do
-            commandString = string.format('%s %s', commandString, value)
-        end
-        TriggerClientEvent('QBCore:Command:CallCommand', src, commandString)
-    end
-end)
-
----@deprecated call server function SpawnVehicle instead from imports/utils.lua.
-QBCore.Functions.CreateCallback('QBCore:Server:SpawnVehicle', function(source, cb, model, coords, warp)
-    -- print(string.format("%s invoked deprecated callback QBCore:Server:SpawnVehicle. Call server function SpawnVehicle instead from qbx-core/imports/utils.lua.", GetInvokingResource()))
-    local netId = SpawnVehicle(source, model, coords, warp)
-    if netId then cb(netId) end
-end)
-
----@deprecated call server function SpawnVehicle instead from imports/utils.lua.
-QBCore.Functions.CreateCallback('QBCore:Server:CreateVehicle', function(source, cb, model, coords, warp)
-    -- print(string.format("%s invoked deprecated callback QBCore:Server:CreateVehicle. call server function SpawnVehicle instead from qbx-core/imports/utils.lua.", GetInvokingResource()))
-    local netId = SpawnVehicle(source, model, coords, warp)
-    if netId then cb(netId) end
+    TriggerClientEvent('QBCore:Client:SetDuty', src, player.PlayerData.job.onduty)
 end)

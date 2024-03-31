@@ -1,5 +1,3 @@
-QBShared = QBShared or {}
-
 ---@class Weapon
 ---@field name string
 ---@field label string
@@ -8,7 +6,7 @@ QBShared = QBShared or {}
 ---@field damagereason string
 
 ---@type table<number, Weapon>
-QBShared.Weapons = {
+return {
 	-- // WEAPONS
 	-- Melee
 	[`weapon_unarmed`] 				 = {name = 'weapon_unarmed', 		label = 'Fists', 				weapontype = 'Melee',	ammotype = nil, damagereason = 'Melee killed / Whacked / Executed / Beat down / Murdered / Battered'},
@@ -34,6 +32,7 @@ QBShared.Weapons = {
 	[`weapon_handcuffs`] 			 = {name = 'weapon_handcuffs', 		label = 'Handcuffs', 			weapontype = 'Melee',	ammotype = nil,	damagereason = 'Melee killed / Whacked / Executed / Beat down / Murdered / Battered'},
 	[`weapon_bread`] 				 = {name = 'weapon_bread', 			label = 'Baquette', 			weapontype = 'Melee',	ammotype = nil,	damagereason = 'Melee killed / Whacked / Executed / Beat down / Murdered / Battered'},
 	[`weapon_stone_hatchet`] 		 = {name = 'weapon_stone_hatchet', 	label = 'Stone Hatchet',        weapontype = 'Melee',	ammotype = nil,	damagereason = 'Knifed / Stabbed / Eviscerated'},
+	[`weapon_megaphone`] 		 	 = {name = 'weapon_megaphone', 		label = 'Megaphone',        	weapontype = 'Melee',	ammotype = nil,	damagereason = 'Knifed / Stabbed / Eviscerated'},
 
     -- Handguns
 	[`weapon_pistol`] 				 = {name = 'weapon_pistol', 		label = 'Pistol', 				    weapontype = 'Pistol',	ammotype = 'AMMO_PISTOL',	damagereason = 'Pistoled / Blasted / Plugged / Bust a cap in'},
@@ -70,6 +69,7 @@ QBShared.Weapons = {
     -- Shotguns
 	[`weapon_pumpshotgun`] 			 = {name = 'weapon_pumpshotgun', 	 	label = 'Pump Shotgun', 			weapontype = 'Shotgun',	ammotype = 'AMMO_SHOTGUN',	damagereason = 'Devastated / Pulverized / Shotgunned'},
 	[`weapon_pumpshotgun_mk2`]		 = {name = 'weapon_pumpshotgun_mk2',	label = 'Pump Shotgun MK2', 		weapontype = 'Shotgun',	ammotype = 'AMMO_SHOTGUN',	damagereason = 'Devastated / Pulverized / Shotgunned'},
+	[`WEAPON_BEANBAGSHOTGUN`]		 = {name = 'weapon_beanbagshotgun',		label = 'Beanbag Shotgun', 			weapontype = 'Shotgun',	ammotype = 'AMMO_STUNGUN',	damagereason = 'Died'},
 	[`weapon_sawnoffshotgun`] 		 = {name = 'weapon_sawnoffshotgun', 	label = 'Sawn-off Shotgun', 		weapontype = 'Shotgun',	ammotype = 'AMMO_SHOTGUN',	damagereason = 'Devastated / Pulverized / Shotgunned'},
 	[`weapon_assaultshotgun`] 		 = {name = 'weapon_assaultshotgun', 	label = 'Assault Shotgun', 			weapontype = 'Shotgun',	ammotype = 'AMMO_SHOTGUN',	damagereason = 'Devastated / Pulverized / Shotgunned'},
 	[`weapon_bullpupshotgun`] 		 = {name = 'weapon_bullpupshotgun', 	label = 'Bullpup Shotgun', 			weapontype = 'Shotgun',	ammotype = 'AMMO_SHOTGUN',	damagereason = 'Devastated / Pulverized / Shotgunned'},
@@ -93,7 +93,6 @@ QBShared.Weapons = {
 	[`weapon_militaryrifle`]		 = {name = 'weapon_militaryrifle', 		label = 'Military Rifle',   			weapontype = 'Assault Rifle',	ammotype = 'AMMO_RIFLE',	damagereason = 'Ended / Rifled / Shot down / Floored'},
     [`weapon_heavyrifle`] 			 = {name = 'weapon_heavyrifle', 	 	label = 'Heavy Rifle', 					weapontype = 'Assault Rifle',	ammotype = 'AMMO_RIFLE',	damagereason = 'Ended / Rifled / Shot down / Floored'},
     [`weapon_tacticalrifle`] 		 = {name = 'weapon_tacticalrifle', 	 	label = 'Service Rifle', 				weapontype = 'Assault Rifle',	ammotype = 'AMMO_RIFLE',	damagereason = 'Ended / Rifled / Shot down / Floored'},
-	[`weapon_scar17fm`] 		     = {name = 'weapon_scar17fm', 	 		label = 'FN SCAR 17', 					weapontype = 'Assault Rifle',	ammotype = 'AMMO_RIFLE',	damagereason = 'Ended / Rifled / Shot down / Floored'},
 
     -- Light Machine Guns
 	[`weapon_mg`] 					 = {name = 'weapon_mg', 			label = 'Machinegun', 			weapontype = 'Light Machine Gun',	ammotype = 'AMMO_MG',	damagereason = 'Machine gunned / Sprayed / Ruined'},
@@ -109,7 +108,6 @@ QBShared.Weapons = {
 	[`weapon_marksmanrifle_mk2`]	 = {name = 'weapon_marksmanrifle_mk2',	label = 'Marksman Rifle MK2',	    weapontype = 'Sniper Rifle',	ammotype = 'AMMO_SNIPER',			damagereason = 'Sniped / Picked off / Scoped'},
 	[`weapon_remotesniper`] 		 = {name = 'weapon_remotesniper', 	 	label = 'Remote Sniper', 			weapontype = 'Sniper Rifle',	ammotype = 'AMMO_SNIPER_REMOTE',	damagereason = 'Sniped / Picked off / Scoped'},
     [`weapon_precisionrifle`] 		 = {name = 'weapon_precisionrifle', 	label = 'Precision Rifle', 			weapontype = 'Sniper Rifle',	ammotype = 'AMMO_SNIPER',	        damagereason = 'Sniped / Picked off / Scoped'},
-	[`weapon_huntingrifle`] 		 = {name = 'weapon_huntingrifle', 		label = 'Winchester Model 70', 		weapontype = 'Sniper Rifle',	ammotype = 'AMMO_SNIPER',	        damagereason = 'Sniped / Picked off / Scoped'},
 
     -- Heavy Weapons
 	[`weapon_rpg`] 					 = {name = 'weapon_rpg', 			      	label = 'RPG', 						weapontype = 'Heavy Weapons',	ammotype = 'AMMO_RPG',				damagereason = 'Killed / Exploded / Obliterated / Destroyed / Erased / Annihilated'},
