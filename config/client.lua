@@ -2,10 +2,10 @@ return {
     statusIntervalSeconds = 5, -- how often to check hunger/thirst status to remove health if 0.
     loadingModelsTimeout = 10000, -- Waiting time for ox_lib to load the models before throws an error, for low specs pc
 
-    pauseMapText = 'Powered by Qbox', -- Text shown above the map when ESC is pressed. If left empty 'FiveM' will appear
+    pauseMapText = 'SAES', -- Text shown above the map when ESC is pressed. If left empty 'FiveM' will appear
 
     characters = {
-        useExternalCharacters = false, -- Whether you have an external character management resource. (If true, disables the character management inside the core)
+        useExternalCharacters = true, -- Whether you have an external character management resource. (If true, disables the character management inside the core)
         enableDeleteButton = true, -- Whether players should be able to delete characters themselves.
         startingApartment = true, -- If set to false, skips apartment choice in the beginning (requires qbx_spawn if true)
 
@@ -249,25 +249,25 @@ return {
     discord = {
         enabled = true, -- This will enable or disable the built in discord rich presence.
 
-        appId = '', -- This is the Application ID (Replace this with you own)
+        appId = '1236398521943457844', -- This is the Application ID (Replace this with you own)
 
         largeIcon = { -- To set this up, visit https://forum.cfx.re/t/how-to-updated-discord-rich-presence-custom-image/157686
-            icon = 'logo_name', -- Here you will have to put the image name for the 'large' icon.
-            text = 'This is a large icon with text', -- Here you can add hover text for the 'large' icon.
+            icon = 'discord512', -- Here you will have to put the image name for the 'large' icon.
+            text = 'San Andreas Emergency Services', -- Here you can add hover text for the 'large' icon.
         },
 
         smallIcon = {
-            icon = 'logo_name', -- Here you will have to put the image name for the 'small' icon.
-            text = 'This is a small icon with text', -- Here you can add hover text for the 'small' icon.
+            icon = 'discord512', -- Here you will have to put the image name for the 'small' icon.
+            text = 'San Andreas Emergency Services', -- Here you can add hover text for the 'small' icon.
         },
 
         firstButton = {
-            text = 'First Button!',
+            text = 'Join',
             link = 'fivem://connect/localhost:30120',
         },
 
         secondButton = {
-            text = 'Second Button!',
+            text = 'Discord',
             link = 'fivem://connect/localhost:30120',
         }
     },
